@@ -1,12 +1,13 @@
-import {Alert} from "./components/Alert.tsx";
+import React from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import Home from './pages/Home';
 
-function App() {
-
-    return <div>
-        <Alert>
-            Hey, <b>John Doe</b>
-        </Alert>
-    </div>;
-}
+const App: React.FC = () => {
+    return <Router>
+        <Routes>
+            <Route path="/" element={<Home/>}/>
+        </Routes>
+    </Router>;
+};
 
 export default App;
