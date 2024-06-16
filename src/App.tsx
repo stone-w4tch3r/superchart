@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './chartModule/Home';
 import Dashboard from "./dashboard_example/Dashboard.tsx";
 import LandingPage from "./landing_example/LandingPage.tsx";
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip} from 'recharts';
-import {Point, Track} from "../types/types.ts";
+import {Point, Track} from "../chartModule/types.ts";
 
 interface ChartProps {
     data: { points: Point[], tracks: Track[] };
