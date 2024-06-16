@@ -6,7 +6,7 @@ import {fetchRoute} from "./api.ts";
 export const useFetchRoute = () => {
     const [points, setPoints] = useState<Point[]>([]);
     const [tracks, setTracks] = useState<Track[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -20,9 +20,9 @@ export const useFetchRoute = () => {
                 setError(err.message);
             })
             .finally(() => {
-                setLoading(false);
+                setIsLoading(false);
             });
     }, []);
 
-    return {points, tracks, loading, error};
+    return {points, tracks, isLoading, error};
 };
