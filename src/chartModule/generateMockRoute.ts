@@ -1,5 +1,5 @@
 import {Point, Track} from './types.ts';
-import {RouteDto} from "./api.ts";
+import {RouteDto} from "./fetchRouteFromApi.ts";
 
 export const fetchMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
     const points = generateRandomPoints();
@@ -10,7 +10,7 @@ export const fetchMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
     if (Math.random() < 0.1) {
         throw new Error('Failed to fetch route data');
     }
-    
+
     return {routeDto: {points, tracks}};
 };
 

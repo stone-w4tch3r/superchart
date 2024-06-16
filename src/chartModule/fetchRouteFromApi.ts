@@ -7,7 +7,7 @@ export type RouteDto = {
     tracks: Track[];
 };
 
-export const fetchRoute = async (): Promise<{ routeDto: RouteDto }> => {
+export const fetchRouteFromApi = async (): Promise<{ routeDto: RouteDto }> => {
     const response = await fetch(API_URL);
     if (!response.ok) {
         throw new Error('Failed to fetch route data');
