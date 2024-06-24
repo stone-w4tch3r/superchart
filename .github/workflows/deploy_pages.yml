@@ -1,5 +1,8 @@
 name: deploy_pages CI
 
+permissions:
+  contents: write # This is required to push to the repository
+
 on:
   push:
     branches: [ "master" ]
