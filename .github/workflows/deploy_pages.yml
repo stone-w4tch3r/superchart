@@ -1,7 +1,7 @@
 name: deploy_pages CI
 
 permissions:
-  contents: write # This is required to push to the repository
+  contents: write # This is required to push to the repository (gh-pages branch)
 
 on:
   push:
