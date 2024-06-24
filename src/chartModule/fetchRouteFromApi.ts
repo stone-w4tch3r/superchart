@@ -1,10 +1,10 @@
-import {Point, Track} from "./types.ts";
+import {IPoint, ITrack} from "./types.ts";
 
 const API_URL = 'http://your-backend-url/api/routes';
 
 export type RouteDto = {
-    points: Point[];
-    tracks: Track[];
+    points: IPoint[];
+    tracks: ITrack[];
 };
 
 export const fetchRouteFromApi = async (): Promise<{ routeDto: RouteDto }> => {

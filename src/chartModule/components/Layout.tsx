@@ -13,16 +13,16 @@ const Layout: React.FC<LayoutProps> = ({children}) => {
 
     return <>
         <AppBar position="static"
-                sx={{
-                    height: {xl: "10vh"}
-                }}
+                // sx={{
+                //     height: {xl: "10vh"}
+                // }}
         >
             <Toolbar sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: "flex-start",
                 justifyContent: "center",
-                height: "100vh",
+                // height: "100vh",
             }}>
                 <Typography variant="h3">
                     Route Visualization

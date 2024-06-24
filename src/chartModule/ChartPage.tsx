@@ -5,7 +5,7 @@ import {useFetchRoute} from "./useFetchRoute.ts";
 import {Skeleton, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import {Point, Track} from "./types.ts";
+import {IPoint, ITrack} from "./types.ts";
 import Stack from "@mui/material/Stack";
 
 
@@ -13,7 +13,7 @@ const ChartPage: React.FC = () => {
     const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute();
 
     return <Layout>
-        <Stack spacing={2} alignItems={'center'} direction={{xs: 'column', sm: 'row'}}>
+        <Stack spacing={2} alignItems={'center'} direction='column' >
             <Box>
                 {renderChartBoxContent(points, tracks, isLoading, error)}
             </Box>
@@ -24,7 +24,7 @@ const ChartPage: React.FC = () => {
     </Layout>;
 };
 
-function renderChartBoxContent(points: Point[], tracks: Track[], isLoading: boolean, error: React.ReactNode) {
+function renderChartBoxContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error: React.ReactNode) {
     if (isLoading) {
         return <Skeleton variant="rectangular" animation='wave' width="100%" height="100px"/>
     }

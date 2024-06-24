@@ -1,11 +1,13 @@
-import {Point, Track} from './types.ts';
+import {IPoint, ITrack} from './types.ts';
 import {RouteDto} from "./fetchRouteFromApi.ts";
 
-export const fetchMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
+export const generateMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
     const points = generateRandomPoints();
     const tracks = generateTracksBetweenPoints(points);
 
-    await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 10000) + 1000));
+    // const timeout = Math.floor(Math.random() * 10000) + 1000;
+    const timeout = 0;
+    await new Promise(resolve => setTimeout(resolve, timeout));
 
     if (Math.random() < 0.1) {
         throw new Error('Failed to fetch route data');
@@ -14,9 +16,9 @@ export const fetchMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
     return {routeDto: {points, tracks}};
 };
 
-function generateRandomPoints(): Point[] {
-    const points: Point[] = [];
-    const pointsCount = Math.floor(Math.random() * 10) + 1;
+function generateRandomPoints(): IPoint[] {
+    const points: IPoint[] = [];
+    const pointsCount = Math.floor(Math.random() * 10) + 2;
     for (let i = 0; i < pointsCount; i++) {
         points.push({
             id: i,
@@ -27,8 +29,8 @@ function generateRandomPoints(): Point[] {
     return points;
 }
 
-function generateTracksBetweenPoints(points: Point[]): Track[] {
-    const tracks: Track[] = [];
+function generateTracksBetweenPoints(points: IPoint[]): ITrack[] {
+    const tracks: ITrack[] = [];
     for (let i = 0; i < points.length - 1; i++) {
         const firstPoint = points[i];
         const secondPoint = points[i + 1];

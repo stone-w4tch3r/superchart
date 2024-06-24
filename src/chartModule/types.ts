@@ -10,13 +10,13 @@ export enum MaxSpeed {
     SLOW,
 }
 
-export interface Point {
+export interface IPoint {
     id: number;
     name: string;
     height: number;
 }
 
-export interface Track {
+export interface ITrack {
     firstId: number;
     secondId: number;
     distance: number;
