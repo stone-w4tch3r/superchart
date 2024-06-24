@@ -37,7 +37,7 @@ function generateTracksBetweenPoints(points: IPoint[]): ITrack[] {
         tracks.push({
             firstId: firstPoint.id,
             secondId: secondPoint.id,
-            distance: Math.floor(Math.random() * 10),
+            distance: Math.floor(Math.random() * 10) + 1,
             surface: Math.floor(Math.random() * 3),
             maxSpeed: Math.floor(Math.random() * 3),
         });

@@ -1,56 +1,44 @@
 import React from 'react';
 import {IPoint, ITrack, MaxSpeed, Surface} from "../types.ts";
-import {BarPlot, ChartContainer, ChartsXAxis, LinePlot} from "@mui/x-charts";
+import {
+    BarPlot,
+    ChartContainer,
+    ChartsAxisContentProps,
+    ChartsAxisHighlight,
+    ChartsTooltip,
+    ChartsXAxis,
+    ChartsYAxis,
+    LinePlot,
+    LineSeriesType,
+    MarkPlot
+} from "@mui/x-charts";
+import Paper from "@mui/material/Paper";
 
 interface ChartProps {
     data: { points: IPoint[], tracks: ITrack[] };
 }
 
 const Chart: React.FC<ChartProps> = ({data}) => {
-    const [chartsBySpeed, barItems] = convertToSequences(data.points, data.tracks);
-    const series = [
-        {data: chartsBySpeed[MaxSpeed.FAST], type: 'line', color: maxSpeedToColor[MaxSpeed.FAST]},
-    ];
+    const [pointSequences, barItems, xValues] = getDataForChart(data.points, data.tracks);
+    
+    const series = pointSequences.map(([speed, points]) => ({
+        data: points.map(point => point?.height),
+        type: 'line',
+        color: speedToColor[speed],
+        curve: "linear"
+    }));
 
     return <ChartContainer
-        // dataset={[
-        //     ...lineSequences.flatMap(s => ([
-        //         {
-        //             id: s.item1.id,
-        //             name: s.item1.name,
-        //             height: s.item1.height,
-        //             distanceFromStart: s.item1.distanceFromStart,
-        //             maxSpeed: s.maxSpeed,
-        //             itemType: 'line'
-        //         },
-        //         {
-        //             id: s.item2.id,
-        //             name: s.item2.name,
-        //             height: s.item2.height,
-        //             distanceFromStart: s.item2.distanceFromStart,
-        //             maxSpeed: s.maxSpeed,
-        //             itemType: 'line'
-        //         }
-        //     ]))
-        // ]}
-        series={[
-            // { dataKey: 'height'
-            // {type: "bar", data: barItems.map(x => 1)},
-        ]}
+        series={series as LineSeriesType[]}
         xAxis={[
             {
-                // dataKey: 'id',
-                // data: line
+                data: xValues,
                 scaleType: 'linear',
                 id: 'x-axis-id',
                 ////@ts-expect-error ide fails to resolve barGapRatio
                 // barGapRatio: 0.2,
                 // categoryGapRatio: 0,
-                // colorMap: {
-                //     type: 'ordinal',
-                //     values: data.points.map(p => p.id),
-                //     colors: data.points.map(generateColorForPoint)
-                // }
+
             }
         ]}
         width={800}
@@ -58,8 +46,21 @@ const Chart: React.FC<ChartProps> = ({data}) => {
     >
         <BarPlot/>
         <LinePlot/>
+        <MarkPlot slotProps={{mark: {color: "black"}}}/>
         <ChartsXAxis label="X axis" position="bottom" axisId="x-axis-id"/>
+        <ChartsYAxis label="Y axis" position="left"/>
+        <ChartsAxisHighlight x="line"/>
+        <ChartsTooltip trigger="axis" slots={{axisContent: Tooltip}}/>
     </ChartContainer>
+};
+
+const Tooltip = (props: ChartsAxisContentProps) => {
+    const {axisData, dataIndex} = props;
+    return (
+        <Paper sx={{padding: 3, backgroundColor: "pink"}}>
+            <p>{JSON.stringify(axisData.x) + " " + JSON.stringify(axisData.y) + " " + dataIndex}</p>
+        </Paper>
+    );
 };
 
 export default Chart;
@@ -70,7 +71,7 @@ const surfaceToColor: { [key in Surface]: string } = {
     [Surface.GROUND]: 'green',
 }
 
-const maxSpeedToColor: { [key in MaxSpeed]: string } = {
+const speedToColor: { [key in MaxSpeed]: string } = {
     [MaxSpeed.FAST]: 'red',
     [MaxSpeed.NORMAL]: 'yellow',
     [MaxSpeed.SLOW]: 'green',
@@ -83,18 +84,13 @@ interface ILinePoint {
     distanceFromStart: number;
 }
 
-interface IBarItem {
-    surface: Surface;
-}
-
-function convertToSequences(points: IPoint[], tracks: ITrack[]):
-    [{ [key in MaxSpeed]: (ILinePoint | null)[] }, IBarItem[]] {
-    const tracksOrdered = tracks;//sortTracks(tracks);
-    const pointsWithDistanceOrdered = calculatePointDistance(points, tracksOrdered)
-        .sort((a, b) => a[1] - b[1]);
-
-
-    const linePoints: ILinePoint[] = pointsWithDistanceOrdered
+function getDataForChart(points: IPoint[], tracks: ITrack[]): [
+    pointSequences: [MaxSpeed, (ILinePoint | null)[]][],
+    surfaces: Surface[],
+    xValues: number[]
+] {
+    const linePoints: ILinePoint[] = calculatePointDistance(points, tracks)
+        .sort((a, b) => a[1] - b[1])
         .map(([point, distance]) => ({
             id: point.id,
             name: point.name,
@@ -102,37 +98,62 @@ function convertToSequences(points: IPoint[], tracks: ITrack[]):
             distanceFromStart: distance,
         }));
 
-    const idToLinePointMap: { [key: number]: ILinePoint } = {};
-    linePoints.forEach(point => {
-        idToLinePointMap[point.id] = point;
+    const pointSequences: [MaxSpeed, (ILinePoint | null)[]][] = createPointsSequences(linePoints, tracks);
+    const surfaces = tracks.map(track => track.surface);
+    const xValues = linePoints.map(point => point.distanceFromStart);
+
+    return [pointSequences, surfaces, xValues];
+}
+
+function createPointsSequences(points: ILinePoint[], tracks: ITrack[]): [MaxSpeed, (ILinePoint | null)[]][] {
+    const sequences: [MaxSpeed, (ILinePoint | null)[]][] = [];
+    const idToPointMap: { [key: number]: ILinePoint } = {};
+    points.forEach(point => {
+        idToPointMap[point.id] = point;
     });
 
-    const chartForSpeed: { [key in MaxSpeed]: (ILinePoint | null)[] } = {
-        [MaxSpeed.FAST]: Array(linePoints.length).fill(null),
-        [MaxSpeed.NORMAL]: Array(linePoints.length).fill(null),
-        [MaxSpeed.SLOW]: Array(linePoints.length).fill(null),
-    };
-    tracksOrdered.forEach(track => {
-        const firstPoint = idToLinePointMap[track.firstId];
-        const secondPoint = idToLinePointMap[track.secondId];
+    tracks.forEach(track => {
+        const firstPoint = idToPointMap[track.firstId];
+        const secondPoint = idToPointMap[track.secondId];
 
         if (!firstPoint || !secondPoint) {
             throw new Error("Track has no first or second point");
         }
 
-        const chart = chartForSpeed[track.maxSpeed];
-        const firstPointIndex = linePoints.indexOf(firstPoint);
-        const secondPointIndex = linePoints.indexOf(secondPoint);
+        if (sequences.length === 0 || sequences[sequences.length - 1][0] !== track.maxSpeed) {
+            sequences.push([track.maxSpeed, new Array(points.length).fill(null)]);
+        }
 
-        chart[firstPointIndex] = firstPoint;
-        chart[secondPointIndex] = secondPoint;
+        sequences[sequences.length - 1][1][points.indexOf(firstPoint)] = firstPoint;
+        sequences[sequences.length - 1][1][points.indexOf(secondPoint)] = secondPoint;
     });
 
-    const barItems: IBarItem[] = tracksOrdered.map(track => ({
-        surface: track.surface,
-    }));
+    return sequences;
+}
 
-    return [chartForSpeed, barItems];
+function calculatePointDistance(points: IPoint[], tracksOrdered: ITrack[]): [IPoint, number][] {
+    const pointToDistanceMap: { [key: number]: number } = {};
+    points.forEach(point => {
+        pointToDistanceMap[point.id] = 0;
+    });
+
+    const idToPointsMap: { [key: number]: IPoint } = {};
+    points.forEach(point => {
+        idToPointsMap[point.id] = point;
+    });
+
+    tracksOrdered.forEach(track => {
+        const firstPoint = idToPointsMap[track.firstId];
+        const secondPoint = idToPointsMap[track.secondId];
+
+        if (!firstPoint || !secondPoint) {
+            throw new Error("Track has no first or second point");
+        }
+
+        pointToDistanceMap[secondPoint.id] = pointToDistanceMap[firstPoint.id] + track.distance;
+    });
+
+    return points.map(point => [point, pointToDistanceMap[point.id]]);
 }
 
 function sortTracks(tracks: ITrack[]): ITrack[] {
@@ -163,29 +184,3 @@ function sortTracks(tracks: ITrack[]): ITrack[] {
 
     return sortedTracks;
 }
-
-function calculatePointDistance(points: IPoint[], tracksOrdered: ITrack[]): [IPoint, number][] {
-    const pointToDistanceMap: { [key: number]: number } = {};
-    points.forEach(point => {
-        pointToDistanceMap[point.id] = 0;
-    });
-
-    const idToPointsMap: { [key: number]: IPoint } = {};
-    points.forEach(point => {
-        idToPointsMap[point.id] = point;
-    });
-
-    tracksOrdered.forEach(track => {
-        const firstPoint = idToPointsMap[track.firstId];
-        const secondPoint = idToPointsMap[track.secondId];
-
-        if (!firstPoint || !secondPoint) {
-            throw new Error("Track has no first or second point");
-        }
-
-        pointToDistanceMap[secondPoint.id] = pointToDistanceMap[firstPoint.id] + track.distance;
-    });
-
-    return points.map(point => [point, pointToDistanceMap[point.id]]);
-}
-    

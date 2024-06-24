@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Layout from './components/Layout';
 import Chart from './components/Chart';
 import {useFetchRoute} from "./useFetchRoute.ts";
@@ -13,7 +13,7 @@ const ChartPage: React.FC = () => {
     const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute();
 
     return <Layout>
-        <Stack spacing={2} alignItems={'center'} direction='column' >
+        <Stack spacing={2} alignItems={'center'} direction='column'>
             <Box>
                 {renderChartBoxContent(points, tracks, isLoading, error)}
             </Box>
