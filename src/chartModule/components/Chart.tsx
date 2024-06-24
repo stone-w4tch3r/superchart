@@ -1,7 +1,8 @@
 import React from 'react';
 import {IPoint, ITrack, MaxSpeed, Surface} from "../types.ts";
 import {
-    BarPlot,
+    AllSeriesType,
+    BarPlot, BarSeriesType,
     ChartContainer,
     ChartsAxisContentProps,
     ChartsAxisHighlight,
@@ -10,7 +11,7 @@ import {
     ChartsYAxis,
     LinePlot,
     LineSeriesType,
-    MarkPlot
+    MarkPlot, useDrawingArea
 } from "@mui/x-charts";
 import Paper from "@mui/material/Paper";
 
@@ -19,42 +20,44 @@ interface ChartProps {
 }
 
 const Chart: React.FC<ChartProps> = ({data}) => {
-    const [pointSequences, barItems, xValues] = getDataForChart(data.points, data.tracks);
-    
-    const series = pointSequences.map(([speed, points]) => ({
-        data: points.map(point => point?.height),
-        type: 'line',
-        color: speedToColor[speed],
-        curve: "linear"
-    }));
+    const {pointSequences, surfacesWithXCoordinates, xValues} = getDataForChart(data.points, data.tracks);
+
+    const coloredColumns = surfacesWithXCoordinates.map(
+        ([x1, x2, surface]) => [x1, x2, surfaceToColor[surface]] as [number, number, string]
+    );
+    const series = pointSequences.map(
+        ([speed, points]) => ({
+            data: points.map(point => point?.height),
+            type: 'line',
+            color: speedToColor[speed],
+            curve: "linear",
+        } as AllSeriesType)
+    );
 
     return <ChartContainer
-        series={series as LineSeriesType[]}
-        xAxis={[
-            {
-                data: xValues,
-                scaleType: 'linear',
-                id: 'x-axis-id',
-                ////@ts-expect-error ide fails to resolve barGapRatio
-                // barGapRatio: 0.2,
-                // categoryGapRatio: 0,
-
-            }
-        ]}
+        series={series}
+        xAxis={[{
+            scaleType: 'linear',
+            data: xValues,
+            max: xValues[xValues.length - 1],
+            id: 'x-linear-axis-id',
+        }]}
         width={800}
         height={400}
     >
-        <BarPlot/>
+        <Background coloredColumns={coloredColumns}/>
         <LinePlot/>
         <MarkPlot slotProps={{mark: {color: "black"}}}/>
-        <ChartsXAxis label="X axis" position="bottom" axisId="x-axis-id"/>
+        <ChartsXAxis label="X axis" position="bottom" axisId="x-linear-axis-id"/>
         <ChartsYAxis label="Y axis" position="left"/>
         <ChartsAxisHighlight x="line"/>
         <ChartsTooltip trigger="axis" slots={{axisContent: Tooltip}}/>
     </ChartContainer>
 };
 
-const Tooltip = (props: ChartsAxisContentProps) => {
+export default Chart;
+
+const Tooltip: React.FC<ChartsAxisContentProps> = (props) => {
     const {axisData, dataIndex} = props;
     return (
         <Paper sx={{padding: 3, backgroundColor: "pink"}}>
@@ -63,12 +66,34 @@ const Tooltip = (props: ChartsAxisContentProps) => {
     );
 };
 
-export default Chart;
+const Background: React.FC<{ coloredColumns: [x1: number, x2: number, color: string][] }> = (p) => {
+    const {left, top, width, height} = useDrawingArea();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+
+    return <>
+        {p.coloredColumns.map(([x1, x2, color], index) => {
+            const columnLeft = left + (x1 / 100) * width;
+            const columnWidth = ((x2 - x1) / 100) * width;
+
+            return (
+                <rect
+                    key={index}
+                    x={columnLeft}
+                    y={top}
+                    width={columnWidth}
+                    height={height}
+                    fill={color}
+                />
+            );
+        })}
+    </>;
+}
 
 const surfaceToColor: { [key in Surface]: string } = {
     [Surface.SAND]: 'brown',
-    [Surface.ASPHALT]: 'black',
-    [Surface.GROUND]: 'green',
+    [Surface.ASPHALT]: 'pink',
+    [Surface.GROUND]: 'gray',
 }
 
 const speedToColor: { [key in MaxSpeed]: string } = {
@@ -84,11 +109,15 @@ interface ILinePoint {
     distanceFromStart: number;
 }
 
-function getDataForChart(points: IPoint[], tracks: ITrack[]): [
+function getDataForChart(points: IPoint[], tracks: ITrack[]): {
     pointSequences: [MaxSpeed, (ILinePoint | null)[]][],
-    surfaces: Surface[],
+    surfacesWithXCoordinates: [x1: number, x2: number, surface: Surface][],
     xValues: number[]
-] {
+} {
+    if (points.length === 0 || tracks.length === 0) {
+        return {pointSequences: [], surfacesWithXCoordinates: [], xValues: []};
+    }
+    
     const linePoints: ILinePoint[] = calculatePointDistance(points, tracks)
         .sort((a, b) => a[1] - b[1])
         .map(([point, distance]) => ({
@@ -99,10 +128,10 @@ function getDataForChart(points: IPoint[], tracks: ITrack[]): [
         }));
 
     const pointSequences: [MaxSpeed, (ILinePoint | null)[]][] = createPointsSequences(linePoints, tracks);
-    const surfaces = tracks.map(track => track.surface);
+    const surfacesWithXCoordinates = getSurfacesWithXCoordinates(linePoints, tracks);
     const xValues = linePoints.map(point => point.distanceFromStart);
 
-    return [pointSequences, surfaces, xValues];
+    return {pointSequences, surfacesWithXCoordinates, xValues};
 }
 
 function createPointsSequences(points: ILinePoint[], tracks: ITrack[]): [MaxSpeed, (ILinePoint | null)[]][] {
@@ -129,6 +158,32 @@ function createPointsSequences(points: ILinePoint[], tracks: ITrack[]): [MaxSpee
     });
 
     return sequences;
+}
+
+function getSurfacesWithXCoordinates(points: ILinePoint[], tracks: ITrack[]): [x1: number, x2: number, surface: Surface][] {
+    const surfaces: [number, number, Surface][] = [];
+    const maxDistance = points[points.length - 1].distanceFromStart;
+    const idToPointMap: { [key: number]: ILinePoint } = {};
+    points.forEach(point => {
+        idToPointMap[point.id] = point;
+    });
+
+    tracks.forEach(track => {
+        const firstPoint = idToPointMap[track.firstId];
+        const secondPoint = idToPointMap[track.secondId];
+
+        if (!firstPoint || !secondPoint) {
+            throw new Error("Track has no first or second point");
+        }
+
+        surfaces.push([
+            firstPoint.distanceFromStart / maxDistance * 100,
+            secondPoint.distanceFromStart / maxDistance * 100,
+            track.surface,
+        ]);
+    });
+
+    return surfaces;
 }
 
 function calculatePointDistance(points: IPoint[], tracksOrdered: ITrack[]): [IPoint, number][] {
