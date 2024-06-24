@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {HashRouter as Router, Route, Routes} from 'react-router-dom';
 import ChartPage from './chartModule/ChartPage.tsx';
 import Dashboard from "./dashboard_example/Dashboard.tsx";
 import LandingPage from "./landing_example/LandingPage.tsx";
