@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace SuperchartBackend;
 
 [ApiController]
+[BasicAuth]
 [Route("[controller]/[action]")]
 public class ChartsController(ChartsService chartsService) : ControllerBase
 {
@@ -12,9 +13,9 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     /// </summary>
     /// <param name="pointsCount">The number of points to generate. Must be between 2 and 200.</param>
     [HttpPost]
-    public ActionResult<ChartDTO> CreateRandomChart([FromQuery, Range(2, 200)] int pointsCount)
+    public async Task<ActionResult<ChartDTO>> CreateRandomChart([FromQuery, Range(2, 200)] int pointsCount)
     {
-        var (points, tracks, name) = chartsService.GenerateRandomChart(pointsCount);
+        var (points, tracks, name) = await chartsService.GenerateRandomChart(pointsCount);
         return CreatedAtAction(nameof(GetChartByName), new { name }, MapToDTO(points, tracks, name));
     }
 
@@ -23,18 +24,18 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     /// </summary>
     /// <param name="name">The name of the chart to retrieve.</param>
     [HttpGet]
-    public ActionResult<ChartDTO> GetChartByName([FromQuery] string name)
+    public async Task<ActionResult<ChartDTO>> GetChartByName([FromQuery] string name)
     {
         if (string.IsNullOrWhiteSpace(name) || !ChartsNameHandler.IsNameValid(name))
             return BadRequest("Invalid name provided");
-        
-        var result = chartsService.GetChartByName(name);
+
+        var result = await chartsService.GetChartByName(name);
         if (result is null)
             return NotFound();
         var (points, tracks, actualName) = result.Value;
         return Ok(MapToDTO(points, tracks, actualName));
     }
-    
+
     /// <summary>
     /// Deletes all data from the database.
     /// </summary>
@@ -44,7 +45,7 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
         await chartsService.DeleteAllDataAsync();
         return NoContent();
     }
-    
+
     /// <summary>
     /// Retrieves all charts from the database.
     /// </summary>

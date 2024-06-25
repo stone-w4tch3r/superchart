@@ -1,5 +1,6 @@
 using NSwag.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using NSwag;
 using NSwag.Generation.AspNetCore;
 using SuperchartBackend;
 
@@ -23,7 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// app.UseAuthorization();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
@@ -31,14 +32,20 @@ return;
 
 static void ConfigureOpenApiDocs(AspNetCoreOpenApiDocumentGeneratorSettings config)
 {
-    config.DocumentName = "TodoAPI";
-    config.Title = "TodoAPI v1";
+    config.DocumentName = "Superchart";
+    config.Title = "Superchart v1";
     config.Version = "v1";
+    
+    config.AddSecurity("Basic", [], new()
+    {
+        Type = OpenApiSecuritySchemeType.Basic,
+        Description = "Input your username and password to access this API",
+    });
 }
 
 static void ConfigureSwaggerUI(SwaggerUiSettings config)
 {
-    config.DocumentTitle = "TodoAPI";
+    config.DocumentTitle = "Superchart";
     config.Path = "/swagger";
     config.DocumentPath = "/swagger/{documentName}/swagger.json";
     config.DocExpansion = "list";

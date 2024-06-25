@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SuperchartBackend;
 
-//todo: finish
 public class ChartsRepository(ChartsDbContext context)
 {
     public async Task<ChartModel> SaveChartAsync(ChartModel chart)
@@ -10,10 +9,10 @@ public class ChartsRepository(ChartsDbContext context)
         await context.AddAsync(chart);
         await context.SaveChangesAsync();
 
-        return chart; //todo: experiment with id
+        return chart;
     }
 
-    public async Task<ChartModel?> LoadChartAsync(string name) //todo: encapsulate
+    public async Task<ChartModel?> LoadChartAsync(string name)
     {
         return await context.Set<ChartModel>()
             .Include(c => c.Points)
@@ -33,6 +32,13 @@ public class ChartsRepository(ChartsDbContext context)
 
     public async Task DeleteAllDataAsync()
     {
+        // foreach (var entity in context.ChangeTracker.Entries()) 
+        //     entity.State = EntityState.Detached;
+        
+        // var charts = context.Charts.ToList();
+        // foreach (var chart in charts) 
+        //     context.Charts.Remove(chart);
+        
         context.Tracks.RemoveRange(context.Tracks);
         context.Points.RemoveRange(context.Points);
         context.Charts.RemoveRange(context.Charts);

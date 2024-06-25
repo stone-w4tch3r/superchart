@@ -19,12 +19,12 @@ public class ChartsDbContext(DbContextOptions<ChartsDbContext> options) : DbCont
             .WithOne();
 
         modelBuilder.Entity<TrackModel>()
-            .HasOne(t => t.FirstPoint)
+            .HasOne<PointModel>()
             .WithMany()
             .HasForeignKey(t => t.FirstPointId);
 
         modelBuilder.Entity<TrackModel>()
-            .HasOne(t => t.SecondPoint)
+            .HasOne<PointModel>()
             .WithMany()
             .HasForeignKey(t => t.SecondPointId);
     }
