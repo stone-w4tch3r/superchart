@@ -4,12 +4,10 @@ namespace SuperchartBackend;
 
 public class Repository(ChartsDbContext context)
 {
-    public async Task<ChartModel> SaveChartAsync(ChartModel chart)
+    public async Task SaveChartAsync(ChartModel chart)
     {
         await context.AddAsync(chart);
         await context.SaveChangesAsync();
-
-        return chart;
     }
 
     public async Task<ChartModel?> LoadChartAsync(string name)

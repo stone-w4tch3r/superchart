@@ -19,8 +19,8 @@ public class Service(Repository repository, ChartNameHandler chartNameHandler)
         for (var i = 0; i < pointsCount - 1; i++)
             tracks[i] = new
             (
-                firstPointId: i,
-                secondPointId: i + 1,
+                firstPoint: points[i],
+                secondPoint: points[i + 1],
                 distance: random.NextDouble() * 1000,
                 surface: (Surface)random.Next(3),
                 maxSpeed: (MaxSpeed)random.Next(3)

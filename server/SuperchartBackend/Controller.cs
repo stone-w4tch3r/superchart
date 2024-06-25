@@ -60,7 +60,7 @@ public class ChartsController(Service service) : ControllerBase
         new(
             name,
             points.Select(p => new PointDTO(p.Id, p.Name, p.Height)).ToArray(),
-            tracks.Select(t => new TrackDTO(t.FirstPointId, t.SecondPointId, t.Distance, t.Surface, t.MaxSpeed))
+            tracks.Select(t => new TrackDTO(t.FirstPoint.Id, t.SecondPoint.Id, t.Distance, t.Surface, t.MaxSpeed))
                 .ToArray()
         );
 }

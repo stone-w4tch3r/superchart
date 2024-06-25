@@ -18,13 +18,14 @@ public enum MaxSpeed
 
 public class ChartModel
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618
+    // ReSharper disable once UnusedMember.Local
     private ChartModel()
 #pragma warning restore CS8618
     {
     }
 
-    public ChartModel(string name, PointModel[] points, TrackModel[] tracks)
+    public ChartModel(string name, IList<PointModel> points, IList<TrackModel> tracks)
     {
         Name = name;
         Points = points;
@@ -33,29 +34,53 @@ public class ChartModel
 
     public int Id { get; init; }
     [MaxLength(50)] public string Name { get; init; }
-    public IList<PointModel> Points { get; init; }
-    public IList<TrackModel> Tracks { get; init; }
+    public IList<PointModel> Points { get; init; } = new List<PointModel>();
+    public IList<TrackModel> Tracks { get; init; } = new List<TrackModel>();
 }
 
-public class PointModel(string name, double height)
+public class PointModel
 {
+#pragma warning disable CS8618
+    // ReSharper disable once UnusedMember.Local
+    private PointModel()
+#pragma warning restore CS8618
+    {
+    }
+
+    public PointModel(string name, double height)
+    {
+        Name = name;
+        Height = height;
+    }
+
     public int Id { get; init; }
-    [MaxLength(50)] public string Name { get; init; } = name;
-    public double Height { get; init; } = height;
+    [MaxLength(50)] public string Name { get; init; }
+    public double Height { get; init; }
 }
 
-public class TrackModel(
-    int firstPointId,
-    int secondPointId,
-    double distance,
-    Surface surface,
-    MaxSpeed maxSpeed
-)
+public class TrackModel
 {
+#pragma warning disable CS8618
+    // ReSharper disable once UnusedMember.Local
+    private TrackModel()
+#pragma warning restore CS8618
+    {
+    }
+
+    public TrackModel(PointModel firstPoint, PointModel secondPoint, double distance, Surface surface,
+        MaxSpeed maxSpeed)
+    {
+        FirstPoint = firstPoint;
+        SecondPoint = secondPoint;
+        Distance = distance;
+        Surface = surface;
+        MaxSpeed = maxSpeed;
+    }
+
     public int Id { get; init; }
-    public int FirstPointId { get; init; } = firstPointId;
-    public int SecondPointId { get; init; } = secondPointId;
-    public double Distance { get; init; } = distance;
-    public Surface Surface { get; init; } = surface;
-    public MaxSpeed MaxSpeed { get; init; } = maxSpeed;
+    public PointModel FirstPoint { get; init; }
+    public PointModel SecondPoint { get; init; }
+    public double Distance { get; init; }
+    public Surface Surface { get; init; }
+    public MaxSpeed MaxSpeed { get; init; }
 }
