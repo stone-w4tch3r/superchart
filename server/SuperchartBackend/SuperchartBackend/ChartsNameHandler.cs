@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SuperchartBackend;
 
-public class ChartsNameHandler(DbContext context)
+public class ChartsNameHandler(ChartsDbContext context)
 {
     private static readonly string[] Adjectives =
     [

@@ -1,6 +1,8 @@
+using System.Transactions;
+
 namespace SuperchartBackend;
 
-public class ChartsService(ChartsRepository chartsRepository)
+public class ChartsService(ChartsRepository chartsRepository, ChartsNameHandler chartsNameHandler)
 {
     public (PointModel[] Points, TrackModel[] Tracks, string Name) GenerateRandomChart(int pointsCount)
     {
@@ -10,23 +12,24 @@ public class ChartsService(ChartsRepository chartsRepository)
 
         for (var i = 0; i < pointsCount; i++)
             points[i] = new(
-                Id: i,
-                Name: $"Point {i}",
-                Height: random.NextDouble() * 1000
+                name: $"Point {i}",
+                height: random.NextDouble() * 1000
             );
 
         for (var i = 0; i < pointsCount - 1; i++)
             tracks[i] = new
             (
-                Id: i,
-                FirstPointId: i,
-                SecondPointId: i + 1,
-                Distance: random.NextDouble() * 1000,
-                Surface: (Surface)random.Next(3),
-                MaxSpeed: (MaxSpeed)random.Next(3)
+                firstPointId: i,
+                secondPointId: i + 1,
+                distance: random.NextDouble() * 1000,
+                surface: (Surface)random.Next(3),
+                maxSpeed: (MaxSpeed)random.Next(3)
             );
 
-        chartsRepository.SaveChartAsync(new("Random chart", points, tracks)); //todo: async
+        var name = chartsNameHandler.GenerateUniqueNameAsync().GetAwaiter().GetResult(); //todo: async
+        
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        chartsRepository.SaveChartAsync(new(name, points, tracks)); //todo: async
 
         return (points, tracks, "Random chart");
     }
@@ -40,6 +43,15 @@ public class ChartsService(ChartsRepository chartsRepository)
             throw new InvalidOperationException(
                 $"Error while loading chart by name. Expected: [{name}], actual: [{chart.Name}]"
             );
+        
         return (chart.Points, chart.Tracks, chart.Name);
     }
+    
+    public async Task DeleteAllDataAsync()
+    {
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        await chartsRepository.DeleteAllDataAsync();
+    }
+
+    public async Task<ChartModel[]> LoadAllChartsAsync() => await chartsRepository.LoadAllChartsAsync();
 }

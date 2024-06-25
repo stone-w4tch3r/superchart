@@ -4,16 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace SuperchartBackend;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class ChartsController(ChartsService chartsService) : ControllerBase
 {
+    /// <summary>
+    /// Creates a random chart with the specified number of points.
+    /// </summary>
+    /// <param name="pointsCount">The number of points to generate. Must be between 2 and 200.</param>
     [HttpPost]
     public ActionResult<ChartDTO> CreateRandomChart([FromQuery, Range(2, 200)] int pointsCount)
     {
         var (points, tracks, name) = chartsService.GenerateRandomChart(pointsCount);
-        return Created("", MapToDTO(points, tracks, name)); //todo: uri
+        return CreatedAtAction(nameof(GetChartByName), new { name }, MapToDTO(points, tracks, name));
     }
 
+    /// <summary>
+    /// Retrieves a chart by its name.
+    /// </summary>
+    /// <param name="name">The name of the chart to retrieve.</param>
     [HttpGet]
     public ActionResult<ChartDTO> GetChartByName([FromQuery] string name)
     {
@@ -25,6 +33,26 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
             return NotFound();
         var (points, tracks, actualName) = result.Value;
         return Ok(MapToDTO(points, tracks, actualName));
+    }
+    
+    /// <summary>
+    /// Deletes all data from the database.
+    /// </summary>
+    [HttpDelete]
+    public async Task<ActionResult> DeleteAllData()
+    {
+        await chartsService.DeleteAllDataAsync();
+        return NoContent();
+    }
+    
+    /// <summary>
+    /// Retrieves all charts from the database.
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<ChartDTO[]>> GetAllCharts()
+    {
+        var charts = await chartsService.LoadAllChartsAsync();
+        return Ok(charts.Select(c => MapToDTO(c.Points, c.Tracks, c.Name)).ToArray());
     }
 
     private static ChartDTO MapToDTO(PointModel[] points, TrackModel[] tracks, string name) =>
