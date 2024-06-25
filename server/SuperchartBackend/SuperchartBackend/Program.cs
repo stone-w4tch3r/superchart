@@ -15,16 +15,18 @@ builder.Services.AddScoped<ChartsNameHandler>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
+builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 
 var app = builder.Build();
-if (app.Environment.IsDevelopment())
-{
-    app.UseOpenApi();
-    app.UseSwaggerUi(ConfigureSwaggerUI);
-}
+
+app.UseMiddleware<SwaggerBasicAuthMiddleware>();
+app.UseOpenApi();
+app.UseSwaggerUi(ConfigureSwaggerUI);
+
+if (app.Environment.IsDevelopment()) 
+    app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
@@ -39,6 +41,9 @@ static void ConfigureOpenApiDocs(AspNetCoreOpenApiDocumentGeneratorSettings conf
     config.AddSecurity("Basic", [], new()
     {
         Type = OpenApiSecuritySchemeType.Basic,
+        Name = "Authorization",
+        In = OpenApiSecurityApiKeyLocation.Header,
+        Scheme = "basic",
         Description = "Input your username and password to access this API",
     });
 }

@@ -2,21 +2,26 @@ using System.Net;
 
 namespace SuperchartBackend;
 
-public class SwaggerBasicAuthMiddleware(RequestDelegate next)
+public class SwaggerBasicAuthMiddleware : IMiddleware
 {
-    private readonly RequestDelegate _next = next;
-
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
+        if (!context.Request.Path.StartsWithSegments("/swagger"))
+        {
+            await next(context);
+            return;
+        }
+        
         var username = Environment.GetEnvironmentVariable(EnvVars.SwaggerBasicAuthUsername) ?? "admin";
         var password = Environment.GetEnvironmentVariable(EnvVars.SwaggerBasicAuthPassword) ?? "admin";
         if (AuthHandler.IsRequestAuthorized(context.Request, username, password))
         {
-            await _next(context);
+            await next(context);
             return;
         }
 
         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        context.Response.Headers.Append("WWW-Authenticate", "Basic realm=\"SuperchartBackend\", charset=\"UTF-8\"");
         await context.Response.WriteAsync("Unauthorized");
     }
 }
