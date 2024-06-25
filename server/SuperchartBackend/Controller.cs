@@ -6,7 +6,7 @@ namespace SuperchartBackend;
 [ApiController]
 [BasicAuth]
 [Route("[controller]/[action]")]
-public class ChartsController(ChartsService chartsService) : ControllerBase
+public class ChartsController(Service service) : ControllerBase
 {
     /// <summary>
     /// Creates a random chart with the specified number of points.
@@ -15,7 +15,7 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ChartDTO>> CreateRandomChart([FromQuery, Range(2, 200)] int pointsCount)
     {
-        var (points, tracks, name) = await chartsService.GenerateRandomChart(pointsCount);
+        var (points, tracks, name) = await service.GenerateRandomChart(pointsCount);
         return CreatedAtAction(nameof(GetChartByName), new { name }, MapToDTO(points, tracks, name));
     }
 
@@ -26,10 +26,10 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ChartDTO>> GetChartByName([FromQuery] string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || !ChartsNameHandler.IsNameValid(name))
+        if (string.IsNullOrWhiteSpace(name) || !ChartNameHandler.IsNameValid(name))
             return BadRequest("Invalid name provided");
 
-        var result = await chartsService.GetChartByName(name);
+        var result = await service.GetChartByName(name);
         if (result is null)
             return NotFound();
         var (points, tracks, actualName) = result.Value;
@@ -42,7 +42,7 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> DeleteAllData()
     {
-        await chartsService.DeleteAllDataAsync();
+        await service.DeleteAllDataAsync();
         return NoContent();
     }
 
@@ -52,7 +52,7 @@ public class ChartsController(ChartsService chartsService) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ChartDTO[]>> GetAllCharts()
     {
-        var charts = await chartsService.LoadAllChartsAsync();
+        var charts = await service.LoadAllChartsAsync();
         return Ok(charts.Select(c => MapToDTO(c.Points, c.Tracks, c.Name)).ToArray());
     }
 

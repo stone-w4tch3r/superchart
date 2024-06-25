@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ChartsDbContext>(opt => opt.UseInMemoryDatabase("ChartsDb"));
 builder.Services.AddControllers();
-builder.Services.AddScoped<ChartsService>();
-builder.Services.AddScoped<ChartsRepository>();
-builder.Services.AddScoped<ChartsNameHandler>();
+builder.Services.AddScoped<Service>();
+builder.Services.AddScoped<Repository>();
+builder.Services.AddScoped<ChartNameHandler>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);

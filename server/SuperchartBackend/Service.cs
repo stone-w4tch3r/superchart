@@ -2,7 +2,7 @@ using System.Transactions;
 
 namespace SuperchartBackend;
 
-public class ChartsService(ChartsRepository chartsRepository, ChartsNameHandler chartsNameHandler)
+public class Service(Repository repository, ChartNameHandler chartNameHandler)
 {
     public async Task<(PointModel[] Points, TrackModel[] Tracks, string Name)> GenerateRandomChart(int pointsCount)
     {
@@ -26,17 +26,17 @@ public class ChartsService(ChartsRepository chartsRepository, ChartsNameHandler 
                 maxSpeed: (MaxSpeed)random.Next(3)
             );
 
-        var name = await chartsNameHandler.GenerateUniqueNameAsync();
+        var name = await chartNameHandler.GenerateUniqueNameAsync();
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        await chartsRepository.SaveChartAsync(new(name, points, tracks));
+        await repository.SaveChartAsync(new(name, points, tracks));
 
         return (points, tracks, name);
     }
 
     public async Task<(PointModel[] Points, TrackModel[] Tracks, string Name)?> GetChartByName(string name)
     {
-        var chart = await chartsRepository.LoadChartAsync(name);
+        var chart = await repository.LoadChartAsync(name);
         if (chart is null)
             return null;
         if (chart.Name != name)
@@ -50,12 +50,12 @@ public class ChartsService(ChartsRepository chartsRepository, ChartsNameHandler 
     public async Task DeleteAllDataAsync()
     {
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        await chartsRepository.DeleteAllDataAsync();
+        await repository.DeleteAllDataAsync();
     }
 
     public async Task<(PointModel[] Points, TrackModel[] Tracks, string Name)[]> LoadAllChartsAsync()
     {
-        var charts = await chartsRepository.LoadAllChartsAsync();
+        var charts = await repository.LoadAllChartsAsync();
         return charts.Select(c => (c.Points.ToArray(), c.Tracks.ToArray(), c.Name)).ToArray();
     }
 }
