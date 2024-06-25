@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {generateMockRoute} from './generateMockRoute.ts';
 import {IPoint, ITrack} from './types.ts';
-import {fetchRouteFromApi} from "./fetchRouteFromApi.ts";
+import {fetchRandomRouteFromApi} from "./fetchRandomRouteFromApi.ts";
 
 export const useFetchRoute = () => {
     const [points, setPoints] = useState<IPoint[]>([]);
@@ -16,8 +16,8 @@ export const useFetchRoute = () => {
         
         setIsLoading(true);
         setError(null);
-        // fetchRouteFromApi()
-        generateMockRoute()
+        fetchRandomRouteFromApi()
+        // generateMockRoute()
             .then(({routeDto}) => {
                 setPoints(routeDto.points);
                 setTracks(routeDto.tracks);

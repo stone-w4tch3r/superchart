@@ -1,5 +1,5 @@
 import {IPoint, ITrack} from './types.ts';
-import {RouteDto} from "./fetchRouteFromApi.ts";
+import {RouteDto} from "./fetchRandomRouteFromApi.ts";
 
 export const generateMockRoute = async (): Promise<{ routeDto: RouteDto }> => {
     const points = generateRandomPoints();
