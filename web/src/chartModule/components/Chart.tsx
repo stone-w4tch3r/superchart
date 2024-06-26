@@ -1,15 +1,14 @@
-import React from 'react';
+import React, {useMemo, useCallback} from 'react';
 import {IPoint, ITrack, MaxSpeed, Surface} from "../types.ts";
 import {
     AllSeriesType,
-    ChartContainer,
     ChartsAxisContentProps,
     ChartsAxisHighlight,
     ChartsTooltip,
     ChartsXAxis,
     ChartsYAxis,
     LinePlot,
-    MarkPlot,
+    ResponsiveChartContainer,
     useDrawingArea
 } from "@mui/x-charts";
 import Paper from "@mui/material/Paper";
@@ -22,75 +21,64 @@ interface IChartPoint {
     distanceFromStart: number;
 }
 
-const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = ({points, tracks}) => {
-    if (!points.length || !tracks.length) {
-        return <Paper sx={{padding: 3, backgroundColor: "pink"}}>
-            <Typography variant="caption">No data to display</Typography>
-        </Paper>;
-    }
+const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({points, tracks}) => {
+    const memoizedData = useMemo(() => {
+        if (!points.length || !tracks.length) {
+            return null;
+        }
+        return convertToChartData(points, tracks);
+    }, [points, tracks]);
 
-    const {pointSequences, surfacesWithXCoordinates, xValues, chartPoints} = convertToChartData(points, tracks);
-    const coloredColumns = surfacesWithXCoordinates.map(
-        ([x1, x2, surface]) => [x1, x2, surfaceToColor[surface]] as [number, number, string]
-    );
-    const series = pointSequences.map(([speed, points]) => ({
+    const {pointSequences, surfacesWithXCoordinates, xValues, chartPoints} = memoizedData;
+
+    const series = useMemo(() => pointSequences.map(([speed, points]) => ({
         data: points.map(point => point?.height),
         type: 'line',
         color: speedToColor[speed],
         curve: "linear",
-    } as AllSeriesType));
+    } as AllSeriesType)), [pointSequences]);
 
-    return <ChartContainer series={series}
-                           xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
-                           width={800} height={400}>
-        <Background coloredColumns={coloredColumns}/>
+    const createTooltip = useCallback(({dataIndex}: ChartsAxisContentProps) => {
+        const point = chartPoints[dataIndex];
+        return <Paper sx={{padding: 3, backgroundColor: "pink"}}>
+            <Typography variant="body2">{point.name}</Typography>
+            <Typography variant="caption">Height: {point.height}</Typography>
+            <br/>
+            <Typography variant="caption">Distance from start: {point.distanceFromStart}</Typography>
+        </Paper>;
+    }, [chartPoints]);
+
+    return <ResponsiveChartContainer
+        series={series}
+        xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
+    >
+        {/*<OptimizedBackground coloredColumns={surfacesWithXCoordinates}/>*/}
         <LinePlot/>
-        <MarkPlot slotProps={{mark: {color: "black"}}}/>
         <ChartsXAxis label="X axis" position="bottom" axisId="x-axis"/>
         <ChartsYAxis label="Y axis" position="left"/>
         <ChartsAxisHighlight x="line"/>
-        <ChartsTooltip trigger="axis" slots={{axisContent: createTooltip(chartPoints)}}/>
-    </ChartContainer>;
-};
+        <ChartsTooltip trigger="axis" slots={{axisContent: createTooltip}}/>
+    </ResponsiveChartContainer>;
+});
 
 export default Chart;
 
-const createTooltip = (points: IChartPoint[]): React.FC<ChartsAxisContentProps> => ({dataIndex}) => {
-    const point = points[dataIndex];
-    return <Paper sx={{padding: 3, backgroundColor: "pink"}}>
-        <Typography variant="body2">{point.name}</Typography>
-        <Typography variant="caption">Height: {point.height}</Typography>
-        <br/>
-        <Typography variant="caption">Distance from start: {point.distanceFromStart}</Typography>
-    </Paper>;
-};
+// const OptimizedBackground: React.FC<{
+//     coloredColumns: [number, number, Surface][]
+// }> = React.memo(({coloredColumns}) => {
+//     const {left, top, width, height} = useDrawingArea();
+//
+//     const columnRects = useMemo(() => coloredColumns.map(([x1, x2, color], index) => {
+//         const columnLeft = left + (x1 / 100) * width;
+//         const columnWidth = ((x2 - x1) / 100) * width;
+//         return <rect key={index} x={columnLeft} y={top} width={columnWidth} height={height} fill={"gray"}/>
+//     }), [coloredColumns, left, top, width, height]);
+//
+//     return <>{columnRects.map((columnRect) => (
+//         {columnRect}
+//     ))}</>;
+// });
 
-const Background: React.FC<{ coloredColumns: [number, number, string][] }> = ({coloredColumns}) => {
-    const {left, top, width, height} = useDrawingArea();
-    const totalAnimationTime = 1;
-    const itemAnimationTime = totalAnimationTime / coloredColumns.length;
-    const delayBetweenAnimations = totalAnimationTime / (2 * coloredColumns.length);
-
-    return <>
-        {coloredColumns.map(([x1, x2, color], index) => {
-            const columnLeft = left + (x1 / 100) * width;
-            const columnWidth = ((x2 - x1) / 100) * width;
-
-            return <rect key={index} x={columnLeft} y={top} width={columnWidth} height={height} fill={color} style={{
-                animation: `drawColumnFromBottom ${itemAnimationTime}s ease-out ${index * delayBetweenAnimations}s both`,
-                transformOrigin: 'bottom'
-            }}/>;
-        })}
-        <style>
-            {`
-                @keyframes drawColumnFromBottom {
-                    from { transform: scaleY(0); }
-                    to { transform: scaleY(1); }
-                }
-            `}
-        </style>
-    </>;
-};
 const surfaceToColor: { [key in Surface]: string } = {
     [Surface.SAND]: 'brown',
     [Surface.ASPHALT]: 'pink',
