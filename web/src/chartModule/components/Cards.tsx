@@ -1,5 +1,5 @@
 import Card from "@mui/material/Card";
-import {CardContent, CardHeader, Grid, MenuItem, Skeleton, Typography} from "@mui/material";
+import {Box, CardContent, CardHeader, Grid, MenuItem, Skeleton, Typography} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import React, {useState} from "react";
 import {IPoint, ITrack} from "../types.ts";
@@ -105,7 +105,7 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartParams
         />;
     }
     if (points.length === 0 || tracks.length === 0) {
-        return <Card sx={{
+        return <Box sx={{
             bgcolor: "#f3f3f3",
             width: "100%",
             height: "100%",
@@ -115,7 +115,7 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartParams
             alignItems: "center"
         }}>
             <Typography variant="h4"> No route loaded yet.</Typography>
-        </Card>
+        </Box>
     }
     if (error) {
         return <Card sx={{
