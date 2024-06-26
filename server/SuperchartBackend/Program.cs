@@ -13,44 +13,13 @@ builder.Services.AddScoped<Service>();
 builder.Services.AddScoped<Repository>();
 builder.Services.AddScoped<ChartNameHandler>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-    // options.AddPolicy("AllowAll",
-        b =>
-        {
-            b.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-});
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 
 var app = builder.Build();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
 
-app.Use(async (context, next) =>
-{
-    if (context.Request.Method == "OPTIONS")
-    {
-        context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
-        context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        context.Response.StatusCode = 200;
-        await context.Response.CompleteAsync();
-    }
-    else
-    {
-        await next();
-    }
-});
-
-app.UseCors();
 app.MapControllers();
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
 app.UseOpenApi();
