@@ -22,4 +22,4 @@ Simple webpage displaying charts from a backend API
 - [Github Actions](https://github.com/features/actions) - CI/CD
 - [Github Packages](https://github.com/features/packages) - Docker image registry
 - [Docker](https://www.docker.com/) - containerization
-- [Render](https://render.com/) - backend hosting
+- [Render](https://render.com/) - backend docker hosting
