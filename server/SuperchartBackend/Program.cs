@@ -13,13 +13,27 @@ builder.Services.AddScoped<Service>();
 builder.Services.AddScoped<Repository>();
 builder.Services.AddScoped<ChartNameHandler>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+    // options.AddPolicy("AllowAll",
+        b =>
+        {
+            b.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 
 var app = builder.Build();
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors();
 app.MapControllers();
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
 app.UseOpenApi();
