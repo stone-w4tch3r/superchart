@@ -3,6 +3,7 @@ import {IPoint, ITrack} from './types.ts';
 import {fetchRandomRouteFromApi} from "./fetchRandomRouteFromApi.ts";
 
 export const useFetchRoute = (pointsCount: number) => {
+    const [chartName, setChartName] = useState<string | null>(null);
     const [points, setPoints] = useState<IPoint[]>([]);
     const [tracks, setTracks] = useState<ITrack[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -19,6 +20,7 @@ export const useFetchRoute = (pointsCount: number) => {
             .then(({routeDto}) => {
                 setPoints(routeDto.points);
                 setTracks(routeDto.tracks);
+                setChartName(routeDto.name);
             })
             .catch((e) =>
                 setError(e.message)
@@ -28,5 +30,5 @@ export const useFetchRoute = (pointsCount: number) => {
             );
     };
 
-    return {points, tracks, isLoading, error, fetchRoute};
+    return {chartName, points, tracks, isLoading, error, fetchRoute};
 };

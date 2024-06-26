@@ -11,13 +11,26 @@ import TextField from "@mui/material/TextField";
 
 
 const ChartPage: React.FC = () => {
-    const [numPoints, setNumPoints] = useState<number>(11);
+    const [numPoints, setNumPoints] = useState<number>(3);
     const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
+    const [inputError, setInputError] = useState<string | null>(null);
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(event.target.value, 10);
-        setNumPoints(isNaN(value) ? 0 : value);
-    };
+    // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const value = event.target.value;
+    //     if (value === '') {
+    //         setInputError('');
+    //     } else {
+    //         const numPoints = Number(value);
+    //         if (isNaN(numPoints) || numPoints < 2 || numPoints > 200) {
+    //             setInputError('Number between 2 and 200');
+    //             return;
+    //         } else {
+    //             setInputError('');
+    //         }
+    //     }
+    //    
+    //     // setNumPoints(Number(value));
+    // };
 
     return <>
         <AppBar position="static"
@@ -46,6 +59,8 @@ const ChartPage: React.FC = () => {
                 <Typography variant="h4">Load Route</Typography>
                 <TextField
                     type="number"
+                    error={!!inputError}
+                    helperText={inputError}
                     label="Number of Points"
                     value={numPoints}
                     onChange={handleInputChange}
