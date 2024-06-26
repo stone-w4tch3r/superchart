@@ -19,12 +19,30 @@ const ChartPage: React.FC = () => {
         setNumPoints(isNaN(value) ? 0 : value);
     };
 
-    return <Layout>
-        <Stack spacing={2} alignItems={'center'} direction='column'>
+    return <>
+        <AppBar position="static"
+            // sx={{
+            //     height: {xl: "10vh"}
+            // }}
+        >
+            <Toolbar
+                sx={{display: 'flex', flexDirection: 'column', alignItems: "flex-start", justifyContent: "center",}}
+            >
+                <Typography variant="h3">
+                    Route Visualization
+                </Typography>
+            </Toolbar>
+        </AppBar>
+        <Stack alignItems={"center"}
+               spacing={2}
+               paddingX={5}
+               paddingTop={2}
+               height={'100vh'}
+        >
             <Card elevation={2} sx={{width: 800, height: 400}}>
                 {renderChartCardContent(points, tracks, isLoading, error)}
             </Card>
-            <Card elevation={2}>
+            <Card elevation={2} sx={{width: 800, height: 400, padding: 2}}>
                 <Typography variant="h4">Load Route</Typography>
                 <TextField
                     type="number"
@@ -38,38 +56,9 @@ const ChartPage: React.FC = () => {
                 </Button>
             </Card>
         </Stack>
-    </Layout>;
+    </>
 };
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({children}) => {
-    return <>
-        <AppBar position="static"
-            // sx={{
-            //     height: {xl: "10vh"}
-            // }}
-        >
-            <Toolbar sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: "flex-start",
-                justifyContent: "center",
-                // height: "100vh",
-            }}>
-                <Typography variant="h3">
-                    Route Visualization
-                </Typography>
-            </Toolbar>
-        </AppBar>
-        <Stack alignItems={"center"}
-               spacing={2}
-               paddingX={5}
-               paddingTop={2}
-               height={'100vh'}
-        >
-            {children}
-        </Stack>
-    </>;
-}
 
 function renderChartCardContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error: React.ReactNode) {
     if (isLoading) {
