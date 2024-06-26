@@ -30,7 +30,7 @@ builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 
 var app = builder.Build();
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors();
