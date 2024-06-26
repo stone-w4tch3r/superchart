@@ -16,14 +16,9 @@ builder.Services.AddScoped<ChartNameHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-});
 
 var app = builder.Build();
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
-app.UseCors("AllowAll");
 app.UseOpenApi();
 app.UseSwaggerUi(ConfigureSwaggerUI);
 app.UseHttpsRedirection();
