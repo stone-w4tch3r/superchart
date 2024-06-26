@@ -1,13 +1,13 @@
-name: Deploy web to github pages
+name: Deploy web to Github Pages
 
 permissions:
   contents: write # This is required to push to the repository (gh-pages branch)
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "release" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "release" ]
 
 jobs:
   build:
