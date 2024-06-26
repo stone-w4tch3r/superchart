@@ -41,3 +41,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            SWAGGER_BASIC_AUTH_USERNAME=${{ secrets.SWAGGER_USER }}
+            SWAGGER_BASIC_AUTH_PASSWORD=${{ secrets.SWAGGER_PASS }}
+            BASIC_AUTH_USERNAME=${{ secrets.API_USER }}
+            BASIC_AUTH_PASSWORD=${{ secrets.API_PASS }}

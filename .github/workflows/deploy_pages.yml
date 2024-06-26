@@ -27,8 +27,14 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache-dependency-path: ./web/package-lock.json
         cache: npm
-    - run: npm ci
-    - run: npm run build --if-present
+    - name: Install dependencies
+      run: npm install
+    - name: Build
+      env:
+        VITE_API_URL: ${{ secrets.API_URL }}
+        VITE_API_USER: ${{ secrets.API_USER }}
+        VITE_API_PASS: ${{ secrets.API_PASS }}
+      run: npm run build
 
     - name: Deploy with gh-pages
       run: |

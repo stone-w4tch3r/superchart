@@ -1,8 +1,8 @@
 import {IPoint, ITrack} from "./types.ts";
 
-const BASE_URL = 'http://localhost:5001';
-const BASE_AUTH_USER = 'admin';
-const BASE_AUTH_PASS = 'admin';
+const API_URL = import.meta.env.VITE_API_URL;
+const API_USER = import.meta.env.VITE_API_USER;
+const API_PASS = import.meta.env.VITE_API_PASS;
 
 export type RouteDto = {
     name: string;
@@ -15,12 +15,12 @@ export const fetchRandomRouteFromApi = async (pointsCount: number = 11): Promise
     const PARAM = 'pointsCount';
     const METHOD = 'POST';
 
-    const apiUrl = new URL(BASE_URL + ROUTE);
+    const apiUrl = new URL(API_URL + ROUTE);
     apiUrl.searchParams.append(PARAM, pointsCount.toString());
 
     const response = await fetch(apiUrl.toString(), {
         method: METHOD,
-        headers: authHeader,
+        headers: {'Authorization': authHeader,}
     });
 
     if (!response.ok) {
@@ -31,6 +31,4 @@ export const fetchRandomRouteFromApi = async (pointsCount: number = 11): Promise
     return {routeDto: data};
 };
 
-const authHeader = {
-    'Authorization': 'Basic ' + btoa(`${BASE_AUTH_USER}:${BASE_AUTH_PASS}`),
-};
+const authHeader = 'Basic ' + btoa(`${API_USER}:${API_PASS}`);
