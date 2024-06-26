@@ -1,6 +1,6 @@
 import {IPoint, ITrack} from "./types.ts";
 
-const BASE_URL = 'http://localhost:5234';
+const BASE_URL = 'http://localhost:5001';
 const BASE_AUTH_USER = 'admin';
 const BASE_AUTH_PASS = 'admin';
 
