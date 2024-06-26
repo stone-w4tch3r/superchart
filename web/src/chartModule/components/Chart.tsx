@@ -52,10 +52,10 @@ const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({poi
         series={series}
         xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
     >
-        {/*<OptimizedBackground coloredColumns={surfacesWithXCoordinates}/>*/}
+        <Background coloredColumns={surfacesWithXCoordinates}/>
         <LinePlot/>
-        <ChartsXAxis label="X axis" position="bottom" axisId="x-axis"/>
-        <ChartsYAxis label="Y axis" position="left"/>
+        <ChartsXAxis label="Distance" position="bottom" axisId="x-axis"/>
+        <ChartsYAxis label="Height" position="left"/>
         <ChartsAxisHighlight x="line"/>
         <ChartsTooltip trigger="axis" slots={{axisContent: createTooltip}}/>
     </ResponsiveChartContainer>;
@@ -63,21 +63,30 @@ const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({poi
 
 export default Chart;
 
-// const OptimizedBackground: React.FC<{
-//     coloredColumns: [number, number, Surface][]
-// }> = React.memo(({coloredColumns}) => {
-//     const {left, top, width, height} = useDrawingArea();
-//
-//     const columnRects = useMemo(() => coloredColumns.map(([x1, x2, color], index) => {
-//         const columnLeft = left + (x1 / 100) * width;
-//         const columnWidth = ((x2 - x1) / 100) * width;
-//         return <rect key={index} x={columnLeft} y={top} width={columnWidth} height={height} fill={"gray"}/>
-//     }), [coloredColumns, left, top, width, height]);
-//
-//     return <>{columnRects.map((columnRect) => (
-//         {columnRect}
-//     ))}</>;
-// });
+const Background: React.FC<{
+    coloredColumns: [number, number, Surface][]
+}> = React.memo(({coloredColumns}) => {
+    const {left, top, width, height} = useDrawingArea();
+
+
+    const columnRects = useMemo(() =>
+        coloredColumns.map(([x1, x2, color], index) => {
+            const columnLeft = left + (x1 / 100) * width;
+            const columnWidth = ((x2 - x1) / 100) * width;
+            return (
+                <rect
+                    key={index}
+                    x={columnLeft}
+                    y={top}
+                    width={columnWidth}
+                    height={height}
+                    fill={surfaceToColor[color]}
+                />
+            );
+        }), [coloredColumns, left, top, width, height]);
+
+    return <>{columnRects}</>;
+});
 
 const surfaceToColor: { [key in Surface]: string } = {
     [Surface.SAND]: 'brown',
