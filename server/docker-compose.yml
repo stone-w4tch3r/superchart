@@ -3,6 +3,8 @@ version: '3.8'
 services:
   superchart-backend:
     image: ghcr.io/stone-w4tch3r/superchart-backend:release
+    container_name: superchart-backend
+    pull_policy: always
     ports:
       - "5001:8080"
     environment:

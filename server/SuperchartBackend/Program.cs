@@ -21,7 +21,7 @@ var app = builder.Build();
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
 app.UseOpenApi();
 app.UseSwaggerUi(ConfigureSwaggerUI);
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.MapControllers();
 if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
