@@ -1,4 +1,4 @@
-name: deploy_pages CI
+name: deploy web to github pages
 
 permissions:
   contents: write # This is required to push to the repository (gh-pages branch)
