@@ -40,7 +40,7 @@ const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({poi
 
     const createTooltip = useCallback(({dataIndex}: ChartsAxisContentProps) => {
         const point = chartPoints[dataIndex];
-        return <Paper sx={{padding: 3, backgroundColor: "pink"}}>
+        return <Paper sx={{padding: 3, backgroundColor: "white", borderRadius: 4}}>
             <Typography variant="body2">{point.name}</Typography>
             <Typography variant="caption">Height: {point.height}</Typography>
             <br/>
