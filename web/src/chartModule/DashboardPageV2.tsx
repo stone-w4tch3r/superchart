@@ -8,60 +8,38 @@ import {
     Card,
     CardHeader,
     CardContent,
-    Select,
     MenuItem,
-    InputLabel,
-    FormControl,
     TextField,
     IconButton,
     styled,
-    Paper,
     Box
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import {LineChart} from '@mui/x-charts';
-import SpeedIcon from '@mui/icons-material/Speed';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
 import Link from "@mui/material/Link";
-import {ThemeProvider, createTheme} from "@mui/material/styles";
+import {GitHub} from "@mui/icons-material";
+import Button from "@mui/material/Button";
 
 
 const DashboardPageV2: React.FC = () => {
-    const [themeState, setThemeState] = useState<'light' | 'dark'>('light');
-
-    const toggleTheme = () => {
-        setThemeState(themeState === 'light' ? 'dark' : 'light');
-    };
-
-    const theme = createTheme({
-        typography: {
-            fontFamily: '"Inter", sans-serif',
-        },
-        components: {
-            MuiCssBaseline: {
-                styleOverrides: {
-                    body: {
-                        backgroundColor: '#f3f4f6',
-                    },
-                },
-            },
-        },
-    });
-
-    return <ThemeProvider theme={theme}>
-        <Navbar themeState={themeState} toggleTheme={toggleTheme}/>
-        <Container sx={{py: 3}}>
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                    <SalesChart/>
+    return <>
+        <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+            <Navbar/>
+            <Container sx={{py: 3, flexGrow: 1}}>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                        <SalesChart/>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <ChartControls/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    <ChartControls/>
-                </Grid>
-            </Grid>
-        </Container>
-        <Footer/>
-    </ThemeProvider>;
+            </Container>
+            <Footer/>
+        </Box>
+    </>;
 };
 
 export default DashboardPageV2;
@@ -70,45 +48,49 @@ const GradientAppBar = styled(AppBar)({
     background: 'linear-gradient(90deg, rgba(1,109,213,1) 0%, rgba(1,61,143,1) 100%)',
 });
 
-const Navbar: React.FC = (themeState: "light" | "dark", toggleTheme: () => void) => {
+const Navbar: React.FC = () => {
     return <GradientAppBar position="static">
         <Toolbar sx={{py: 1, px: 3, display: 'flex', justifyContent: 'space-between'}}>
             <Typography variant="h5" fontWeight={600}>
-                Dashboard
+                Superchart
             </Typography>
-            <IconButton color="inherit" onClick={toggleTheme}>
-                {themeState === 'light' ? <Brightness4Icon/> : <Brightness7Icon/>}
-            </IconButton>
+            <Button
+                variant="outlined"
+                endIcon={<GitHub/>}
+                href="https://github.com"
+                size="large"
+                color="inherit"
+                target="_blank"
+            >
+                Source code
+            </Button>
         </Toolbar>
     </GradientAppBar>;
 };
 
 const SalesChart: React.FC = () => {
-    return <Paper sx={{p: 2, borderRadius: 2, boxShadow: 1}}>
-        <Typography variant="h6" fontWeight={600} mb={2}>
-            Sales Chart
-        </Typography>
-        <LineChart
-            xAxis={[{data: [1, 2, 3, 5, 8, 10]}]}
-            series={[
-                {
-                    data: [2, 5.5, 2, 8.5, 1.5, 5],
-                },
-            ]}
-            width={400}
-            height={300}
-            sx={{bgcolor: "red"}}
-        />
-    </Paper>;
+    return <Card sx={{p: 2, borderRadius: 6, boxShadow: 3}}>
+        <CardHeader title="Sales Chart"/>
+        <CardContent>
+            <LineChart
+                xAxis={[{data: [1, 2, 3, 5, 8, 10]}]}
+                series={[
+                    {
+                        data: [2, 5.5, 2, 8.5, 1.5, 5],
+                    },
+                ]}
+                width={400}
+                height={300}
+                sx={{bgcolor: "red"}}
+            />
+        </CardContent>
+    </Card>;
 };
 
-
 const ChartControls: React.FC = () => {
-    return <Paper sx={{p: 2, borderRadius: 2, boxShadow: 1}}>
-        <Typography variant="h6" fontWeight={600} mb={2}>
-            Chart Controls
-        </Typography>
-        <Box sx={{'& > *': {mt: 2}}}>
+    return <Card sx={{p: 2, borderRadius: 6, boxShadow: 3}}>
+        <CardHeader title="Chart Controls"/>
+        <CardContent sx={{'& > *': {mt: 2}}}>
             <TextField
                 select
                 fullWidth
@@ -160,11 +142,11 @@ const ChartControls: React.FC = () => {
                     />
                 </Grid>
             </Grid>
-        </Box>
-    </Paper>;
+        </CardContent>
+    </Card>;
 };
 
-const GradientFooter = styled(Box)({
+const GradientBox = styled(Box)({
     background: 'linear-gradient(90deg, rgba(1,109,213,1) 0%, rgba(1,61,143,1) 100%)',
     color: 'white',
     padding: '12px 24px',
@@ -174,18 +156,9 @@ const GradientFooter = styled(Box)({
 });
 
 const Footer: React.FC = () => {
-    return <GradientFooter>
+    return <GradientBox>
         <Box sx={{display: 'flex', alignItems: 'center'}}>
-            <SpeedIcon sx={{mr: 1}}/> Speed
+            Powered by <CloudQueueIcon sx={{ml: 1}}/>
         </Box>
-        <Typography>Acme Inc. All rights reserved.</Typography>
-        <Box>
-            <Link href="#" color="inherit" sx={{mr: 2, '&:hover': {textDecoration: 'underline'}}}>
-                Terms of Service
-            </Link>
-            <Link href="#" color="inherit" sx={{'&:hover': {textDecoration: 'underline'}}}>
-                Privacy Policy
-            </Link>
-        </Box>
-    </GradientFooter>;
+    </GradientBox>;
 };

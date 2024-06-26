@@ -11,11 +11,10 @@ const App: React.FC = () => {
     return <Router>
         <Routes>
             <Route path="/" element={<ChartPage/>}/>
-            <Route path="/landing" element={<LandingPage/>}/>
             <Route path="/cards" element={<ResponsiveCardGrid/>}/>
             <Route path="/pricing" element={<PricingPage/>}/>
-            <Route path="/dashboard" element={<DashboardPage/>}/>
             <Route path="/dashboard2" element={<DashboardPageV2/>}/>
+            <Route path="/dashboard" element={<DashboardPage/>}/>
         </Routes>
     </Router>;
 };
