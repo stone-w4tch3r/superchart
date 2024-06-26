@@ -7,7 +7,7 @@ const GradientAppBar = styled(AppBar)({
     background: 'linear-gradient(90deg, rgba(1,109,213,1) 0%, rgba(1,61,143,1) 100%)',
 });
 
-export const Navbar: React.FC = () => {
+export const Topbar: React.FC = () => {
     return <GradientAppBar position="static">
         <Toolbar sx={{py: 1, px: 3, display: 'flex', justifyContent: 'space-between'}}>
             <Typography variant="h5" fontWeight={600}>
@@ -20,6 +20,7 @@ export const Navbar: React.FC = () => {
                 size="large"
                 color="inherit"
                 target="_blank"
+                sx={{borderRadius: 5}}
             >
                 Source code
             </Button>

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, CircularProgress, Grid, Typography} from '@mui/material';
-import {Navbar} from './components/Navbar.tsx';
+import {Topbar} from './components/Topbar.tsx';
 import {Footer} from "./components/Footer.tsx";
 import {ChartControls, ChartCard} from "./components/Cards.tsx";
 import {useFetchRoute} from "./useFetchRoute.ts";
@@ -10,7 +10,7 @@ const ChartPage: React.FC = () => {
     const {chartName, points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
 
     return <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-        <Navbar/>
+        <Topbar/>
         <Box sx={{py: 5, px: 5, flexGrow: 1}}>
             <Grid container spacing={5}>
                 <Grid item xs={12} md={8}>

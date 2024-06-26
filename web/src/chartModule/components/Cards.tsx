@@ -20,7 +20,7 @@ export interface IChartParams {
 
 export const ChartCard: React.FC<{ params: IChartParams }> = ({params: {points, tracks, isLoading, error}}) => {
     return <StyledCard>
-        <CardHeader title="Sales Chart"/>
+        <CardHeader title="Route Chart"/>
         <CardContent sx={{width: "100%", height: "100%", p: 0}}>
             {renderChartCardContent({points, tracks, isLoading, error})}
         </CardContent>
