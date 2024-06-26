@@ -17,7 +17,7 @@ const StyledSection = styled('section')(({ theme }) => ({
     minHeight: '100vh',
     width: '100%',
     padding: theme.spacing(12, 0),
-    background: `linear-gradient(to right, ${theme.palette.grey[50]}, ${theme.palette.grey[100]})`,
+    background: "red",
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -34,7 +34,7 @@ const PricingCard = styled(Paper)(({ theme }) => ({
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[3],
     border: `1px solid ${theme.palette.grey[300]}`,
-    height: '100%',
+    height: '100%', //means that the card will take up the full height of the parent container
 }));
 
 const PopularBadge = styled('div')(({ theme }) => ({
@@ -72,7 +72,7 @@ const StyledCheckIcon = styled(CheckIcon)(({ theme }) => ({
 const PricingPage: React.FC = () => {
     return (
         <StyledSection>
-            <Container maxWidth="lg">
+            <Container maxWidth="lg" sx={{bgcolor: "blue", height:"300"}}>
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={4}>
                         <PricingCard>
