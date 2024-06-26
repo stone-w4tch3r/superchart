@@ -10,7 +10,7 @@ export type RouteDto = {
     tracks: ITrack[];
 };
 
-export const fetchRandomRouteFromApi = async (pointsCount: number = 11): Promise<{ routeDto: RouteDto }> => {
+export const fetchRandomRouteFromApi = async (pointsCount: number): Promise<{ routeDto: RouteDto }> => {
     const ROUTE = '/Charts/CreateRandomChart';
     const PARAM = 'pointsCount';
     const METHOD = 'POST';

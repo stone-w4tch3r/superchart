@@ -5,19 +5,43 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import {IPoint, ITrack} from "./types.ts";
 import Stack from "@mui/material/Stack";
+import Card from "@mui/material/Card";
+import React, {useState} from "react";
+import TextField from "@mui/material/TextField";
 
 
 const ChartPage: React.FC = () => {
-    const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute();
+    const [numPoints, setNumPoints] = useState<number>(11);
+    const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        fetchRoute();
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value, 10);
+        setNumPoints(isNaN(value) ? 0 : value);
+    };
 
     return <Layout>
         <Stack spacing={2} alignItems={'center'} direction='column'>
-            <Box>
-                {renderChartBoxContent(points, tracks, isLoading, error)}
-            </Box>
-            <Button variant="contained" onClick={fetchRoute}>
-                Load Route
-            </Button>
+            <Card elevation={2}>
+                {renderChartCardContent(points, tracks, isLoading, error)}
+            </Card>
+            <Card elevation={2}>
+                <Typography variant="h4">Load Route</Typography>
+                <TextField
+                    type="number"
+                    label="Number of Points"
+                    value={numPoints}
+                    onChange={handleInputChange}
+                    inputProps={{min: 1}}
+                />
+                <Button type="submit" variant="contained" onClick={handleSubmit}>
+                    Load Route
+                </Button>
+            </Card>
         </Stack>
     </Layout>;
 };
@@ -52,7 +76,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({children}) => {
     </>;
 }
 
-function renderChartBoxContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error: React.ReactNode) {
+function renderChartCardContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error: React.ReactNode) {
     if (isLoading) {
         return <Skeleton variant="rectangular" animation='wave' width="100%" height="100px"/>
     }

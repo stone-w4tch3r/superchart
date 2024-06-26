@@ -67,6 +67,9 @@ const createTooltip = (points: IChartPoint[]): React.FC<ChartsAxisContentProps> 
 
 const Background: React.FC<{ coloredColumns: [number, number, string][] }> = ({coloredColumns}) => {
     const {left, top, width, height} = useDrawingArea();
+    const totalAnimationTime = 1;
+    const itemAnimationTime = totalAnimationTime / coloredColumns.length;
+    const delayBetweenAnimations = totalAnimationTime / (2 * coloredColumns.length);
 
     return <>
         {coloredColumns.map(([x1, x2, color], index) => {
@@ -74,7 +77,7 @@ const Background: React.FC<{ coloredColumns: [number, number, string][] }> = ({c
             const columnWidth = ((x2 - x1) / 100) * width;
 
             return <rect key={index} x={columnLeft} y={top} width={columnWidth} height={height} fill={color} style={{
-                animation: `drawColumnFromBottom 0.1s ease-out ${index * 0.1}s both`,
+                animation: `drawColumnFromBottom ${itemAnimationTime}s ease-out ${index * delayBetweenAnimations}s both`,
                 transformOrigin: 'bottom'
             }}/>;
         })}
@@ -88,7 +91,6 @@ const Background: React.FC<{ coloredColumns: [number, number, string][] }> = ({c
         </style>
     </>;
 };
-
 const surfaceToColor: { [key in Surface]: string } = {
     [Surface.SAND]: 'brown',
     [Surface.ASPHALT]: 'pink',

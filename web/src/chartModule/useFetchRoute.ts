@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {IPoint, ITrack} from './types.ts';
 import {fetchRandomRouteFromApi} from "./fetchRandomRouteFromApi.ts";
 
-export const useFetchRoute = () => {
+export const useFetchRoute = (pointsCount: number) => {
     const [points, setPoints] = useState<IPoint[]>([]);
     const [tracks, setTracks] = useState<ITrack[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -15,7 +15,7 @@ export const useFetchRoute = () => {
         
         setIsLoading(true);
         setError(null);
-        fetchRandomRouteFromApi()
+        fetchRandomRouteFromApi(pointsCount)
             .then(({routeDto}) => {
                 setPoints(routeDto.points);
                 setTracks(routeDto.tracks);
