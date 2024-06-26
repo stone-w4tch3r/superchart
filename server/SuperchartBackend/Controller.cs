@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SuperchartBackend;
 
 [ApiController]
 [BasicAuth]
+[EnableCors]
 [Route("[controller]/[action]")]
 public class ChartsController(Service service) : ControllerBase
 {
