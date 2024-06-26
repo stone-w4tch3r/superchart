@@ -51,6 +51,7 @@ const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({poi
     return <ResponsiveChartContainer
         series={series}
         xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
+        sx={{ bgcolor: "#f3f3f3", p: 0, borderRadius: 5 }}
     >
         <Background coloredColumns={surfacesWithXCoordinates}/>
         <LinePlot/>

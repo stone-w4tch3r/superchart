@@ -130,5 +130,5 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartParams
             <Typography variant="h4" color="error">{error}</Typography>
         </Card>
     }
-    return <Chart points={points} tracks={tracks} sx={{width: "100%", height: "100%"}}/>;
+    return <Chart points={points} tracks={tracks}/>;
 }

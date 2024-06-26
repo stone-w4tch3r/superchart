@@ -4,11 +4,9 @@ import {Navbar} from './components/Navbar.tsx';
 import {Footer} from "./components/Footer.tsx";
 import {ChartControls, ChartCard} from "./components/Cards.tsx";
 import {useFetchRoute} from "./useFetchRoute.ts";
-import {IPoint, ITrack} from "./types.ts";
-import Chart from "./components/Chart.tsx";
 
 const ChartPage: React.FC = () => {
-    const [numPoints, setNumPoints] = useState<number | "">("");
+    const [numPoints, setNumPoints] = useState<number>(11);
     const {chartName, points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
 
     return <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
