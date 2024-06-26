@@ -1,6 +1,6 @@
 import Chart from './components/Chart';
 import {useFetchRoute} from "./useFetchRoute.ts";
-import {AppBar, Skeleton, Toolbar, Typography} from "@mui/material";
+import {AppBar, CircularProgress, Skeleton, Toolbar, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import {IPoint, ITrack} from "./types.ts";
@@ -14,11 +14,6 @@ const ChartPage: React.FC = () => {
     const [numPoints, setNumPoints] = useState<number>(11);
     const {points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        fetchRoute();
-    };
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);
         setNumPoints(isNaN(value) ? 0 : value);
@@ -26,7 +21,7 @@ const ChartPage: React.FC = () => {
 
     return <Layout>
         <Stack spacing={2} alignItems={'center'} direction='column'>
-            <Card elevation={2}>
+            <Card elevation={2} sx={{width: 800, height: 400}}>
                 {renderChartCardContent(points, tracks, isLoading, error)}
             </Card>
             <Card elevation={2}>
@@ -38,7 +33,7 @@ const ChartPage: React.FC = () => {
                     onChange={handleInputChange}
                     inputProps={{min: 1}}
                 />
-                <Button type="submit" variant="contained" onClick={handleSubmit}>
+                <Button type="submit" variant="contained" onClick={fetchRoute}>
                     Load Route
                 </Button>
             </Card>
@@ -78,10 +73,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({children}) => {
 
 function renderChartCardContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error: React.ReactNode) {
     if (isLoading) {
-        return <Skeleton variant="rectangular" animation='wave' width="100%" height="100px"/>
+        return <CircularProgress sx={{position: 'relative', top: '50%', left: '50%',}}/>;
+    }
+    if (points.length === 0 || tracks.length === 0) {
+        return <Typography variant="h3">No route loaded</Typography>; //todo: style
     }
     if (error) {
-        return <Typography variant="h3" color="error">{error}</Typography>
+        return <Typography variant="h3" color="error">{error}</Typography> //todo: style
     }
     return <Chart points={points} tracks={tracks}/>;
 }
