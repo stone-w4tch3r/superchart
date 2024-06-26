@@ -18,21 +18,19 @@ builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
 var app = builder.Build();
-
 app.UseMiddleware<SwaggerBasicAuthMiddleware>();
+app.UseCors("AllowAll");
 app.UseOpenApi();
 app.UseSwaggerUi(ConfigureSwaggerUI);
-app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-if (app.Environment.IsDevelopment()) 
-    app.UseDeveloperExceptionPage();
-
 app.UseHttpsRedirection();
 app.MapControllers();
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+
 
 app.Run();
 return;
@@ -42,7 +40,7 @@ static void ConfigureOpenApiDocs(AspNetCoreOpenApiDocumentGeneratorSettings conf
     config.DocumentName = "Superchart";
     config.Title = "Superchart v1";
     config.Version = "v1";
-    
+
     config.AddSecurity("Basic", [], new()
     {
         Type = OpenApiSecuritySchemeType.Basic,
