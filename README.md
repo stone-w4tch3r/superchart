@@ -11,6 +11,10 @@ Demo: [https://stone-w4tch3r.github.io/superchart/](https://stone-w4tch3r.github
 
 Simple webpage displaying charts from a backend API
 
+## Note
+
+Backend is hosted on free Render tier, so first response may take time. Container is put in sleep when there are no requests
+
 ## Powered by
 
 - [React](https://reactjs.org/) - frontend
