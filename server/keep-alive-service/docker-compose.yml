@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  keep-alive:
+    build: .
+    environment:
+      - PING_URL
+      - PING_TIMEOUT
