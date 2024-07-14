@@ -12,7 +12,7 @@ export interface IChartProps {
     error: string | null;
 }
 
-export const ChartCard: React.FC<{ params: IChartProps }> = ({params: {points, tracks, isLoading, error}}) => {
+export const ChartCard: React.FC<IChartProps> = ({points, tracks, isLoading, error}) => {
     return <StyledCard>
         <CardHeader title="Route Chart"/>
         <CardContent sx={{width: "100%", height: "100%", p: 0}}>
@@ -44,7 +44,7 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartProps)
         </Box>
     }
     if (error) {
-        return <Card sx={{
+        return <Box sx={{
             bgcolor: "pink",
             width: "100%",
             height: "100%",
@@ -54,7 +54,7 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartProps)
             alignItems: "center"
         }}>
             <Typography variant="h4" color="error">{error}</Typography>
-        </Card>
+        </Box>
     }
     return <Chart points={points} tracks={tracks}/>;
 }

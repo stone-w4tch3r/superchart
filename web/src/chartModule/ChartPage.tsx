@@ -10,16 +10,22 @@ import {ChartControlsCard} from "./components/ChartControlsCard.tsx";
 const ChartPage: React.FC = () => {
     const [numPoints, setNumPoints] = useState<number>(11);
     const {chartName, points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
+    const spacingMobile = 2;
+    const spacingAdaptive = 4;
 
     return <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
         <Topbar/>
-        <Box sx={{py: 5, px: 5, flexGrow: 1}}>
-            <Grid container spacing={5}>
+        <Box sx={{
+            py: {xs: spacingMobile, md: spacingAdaptive},
+            px: {xs: spacingMobile, md: spacingAdaptive},
+            flexGrow: 1
+        }}>
+            <Grid container spacing={{xs: spacingMobile, md: spacingAdaptive}}>
                 <Grid item xs={12}>
                     <DescriptionCard/>
                 </Grid>
                 <Grid item xs={12} md={8}>
-                    <ChartCard params={{points, tracks, isLoading, error}}/>
+                    <ChartCard points={points} tracks={tracks} isLoading={isLoading} error={error}/>
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <ChartControlsCard
