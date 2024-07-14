@@ -2,8 +2,10 @@ import React, {useState} from 'react';
 import {Box, Grid} from '@mui/material';
 import {Topbar} from './components/Topbar.tsx';
 import {Footer} from "./components/Footer.tsx";
-import {DescriptionCard, ChartControlsCard, ChartCard} from "./components/Cards.tsx";
 import {useFetchRoute} from "./useFetchRoute.ts";
+import {DescriptionCard} from "./components/DescriptionCard.tsx";
+import {ChartCard} from "./components/ChartCard.tsx";
+import {ChartControlsCard} from "./components/ChartControlsCard.tsx";
 
 const ChartPage: React.FC = () => {
     const [numPoints, setNumPoints] = useState<number>(11);
