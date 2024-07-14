@@ -12,7 +12,7 @@ import {
     useDrawingArea
 } from "@mui/x-charts";
 import Paper from "@mui/material/Paper";
-import {Typography} from "@mui/material";
+import {Box, Grid, styled, Typography} from "@mui/material";
 
 interface IChartPoint {
     id: number;
@@ -48,21 +48,91 @@ const Chart: React.FC<{ points: IPoint[], tracks: ITrack[] }> = React.memo(({poi
         </Paper>;
     }, [chartPoints]);
 
-    return <ResponsiveChartContainer
-        series={series}
-        xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
-        sx={{ bgcolor: "#f3f3f3", p: 0, borderRadius: 5 }}
+    return <Box sx={{
+        bgcolor: "#f3f3f3",
+        borderRadius: 5,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        pt: 4,
+    }}
     >
-        <Background coloredColumns={surfacesWithXCoordinates}/>
-        <LinePlot/>
-        <ChartsXAxis label="Distance" position="bottom" axisId="x-axis"/>
-        <ChartsYAxis label="Height" position="left"/>
-        <ChartsAxisHighlight x="line"/>
-        <ChartsTooltip trigger="axis" slots={{axisContent: createTooltip}}/>
-    </ResponsiveChartContainer>;
+        <Legend/>
+        <ResponsiveChartContainer
+            series={series}
+            xAxis={[{scaleType: 'linear', data: xValues, max: Math.max(...xValues), id: 'x-axis'}]}
+        >
+            <Background coloredColumns={surfacesWithXCoordinates}/>
+            <LinePlot/>
+            <ChartsXAxis label="Distance" position="bottom" axisId="x-axis"/>
+            <ChartsYAxis label="Height" position="left"/>
+            <ChartsAxisHighlight x="line"/>
+            <ChartsTooltip trigger="axis" slots={{axisContent: createTooltip}}/>
+        </ResponsiveChartContainer>
+    </Box>;
 });
 
 export default Chart;
+
+const Legend: React.FC = () => {
+    const ColorBox = styled(Box)(({theme}) => ({
+        borderRadius: 4,
+        width: 60,
+        textAlign: "center",
+        padding: 5,
+        display: 'inline-block',
+        marginRight: theme.spacing(1),
+    }));
+
+    interface LegendItemProps {
+        label: string;
+        color: string;
+    }
+
+    const LegendItem: React.FC<LegendItemProps> = ({label, color}) => (
+        <Grid item xs={4} sm={4} md={4} lg={4}>
+            <ColorBox sx={{backgroundColor: color}}>
+                <Typography variant="body2">{label}</Typography>
+            </ColorBox>
+        </Grid>
+    );
+
+    return <Grid
+        container
+        spacing={1}
+        paddingBottom={1}
+        borderRadius={3}
+        width="auto"
+        marginX={{xs: 1, sm: 2}}
+        sx={{bgcolor: "#dadada"}}
+    >
+        <Grid item xs={12}>
+            <Grid container alignItems="center">
+                <Grid item sm={3}>
+                    <Typography variant="h6" fontWeight={400} noWrap>Speed:</Typography>
+                </Grid>
+                <Grid item container xs={12} sm={9}>
+                    <LegendItem label="Min" color={speedToColor[MaxSpeed.SLOW]}/>
+                    <LegendItem label="Medium" color={speedToColor[MaxSpeed.NORMAL]}/>
+                    <LegendItem label="Max" color={speedToColor[MaxSpeed.FAST]}/>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid item xs={12}>
+            <Grid container alignItems="center">
+                <Grid item xs={12} sm={3}>
+                    <Typography variant="h6" fontWeight={400} noWrap>Surface type:</Typography>
+                </Grid>
+                <Grid item container xs={12} sm={9}>
+                    <LegendItem label="Asphalt" color={surfaceToColor[Surface.ASPHALT]}/>
+                    <LegendItem label="Ground" color={surfaceToColor[Surface.GROUND]}/>
+                    <LegendItem label="Sand" color={surfaceToColor[Surface.SAND]}/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>;
+}
 
 const Background: React.FC<{
     coloredColumns: [number, number, Surface][]
