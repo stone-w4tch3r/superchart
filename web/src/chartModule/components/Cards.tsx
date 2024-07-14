@@ -1,13 +1,19 @@
 import Card from "@mui/material/Card";
-import {Box, CardContent, CardHeader, Grid, MenuItem, Skeleton, Typography} from "@mui/material";
+import {Box, CardContent, CardHeader, Skeleton, Typography} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import React, {useState} from "react";
 import {IPoint, ITrack} from "../types.ts";
 import Chart from "./Chart.tsx";
 import Button from "@mui/material/Button";
 
-const StyledCard = ({children}) =>
-    <Card sx={{borderRadius: 6, boxShadow: 3, height: 500, pb: 12, px: 4, pt: 2}}>
+export interface IStyledCardProps {
+    children: React.ReactNode,
+    height?: string | number,
+    paddingBottom?: number
+}
+
+const StyledCard: React.FC<IStyledCardProps> = ({children, height = 500, paddingBottom = 12}) =>
+    <Card sx={{borderRadius: 6, boxShadow: 3, height: height, pb: paddingBottom, px: 4, pt: 2}}>
         {children}
     </Card>;
 
@@ -16,6 +22,19 @@ export interface IChartParams {
     tracks: ITrack[];
     isLoading: boolean;
     error: string | null;
+}
+
+export const DescriptionCard: React.FC = () => {
+    return <StyledCard height="100%" paddingBottom={4}>
+        <CardHeader title="Description"/>
+        <CardContent>
+            <Typography variant="body1">
+                This is a simple webpage that displays a height chart of a route.
+                To get one, you need to provide the number of points. Than backend will generate a random route for you.
+                <br/>Colors on chart represent additional data. You can hover with mouse over the chart to see the exact values.
+            </Typography>
+        </CardContent>
+    </StyledCard>;
 }
 
 export const ChartCard: React.FC<{ params: IChartParams }> = ({params: {points, tracks, isLoading, error}}) => {
@@ -34,7 +53,7 @@ export interface IChartControlsProps {
     setNumPoints: (numPoints: number) => void;
 }
 
-export const ChartControls: React.FC<IChartControlsProps> = (
+export const ChartControlsCard: React.FC<IChartControlsProps> = (
     {
         fetchRoute,
         chartName,
