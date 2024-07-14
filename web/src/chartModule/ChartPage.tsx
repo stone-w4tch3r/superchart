@@ -12,6 +12,7 @@ const ChartPage: React.FC = () => {
     const {chartName, points, tracks, isLoading, error, fetchRoute} = useFetchRoute(numPoints);
     const spacingMobile = 2;
     const spacingAdaptive = 4;
+    const chartCardsHeight = 600;
 
     return <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
         <Topbar/>
@@ -25,7 +26,12 @@ const ChartPage: React.FC = () => {
                     <DescriptionCard/>
                 </Grid>
                 <Grid item xs={12} md={8}>
-                    <ChartCard points={points} tracks={tracks} isLoading={isLoading} error={error}/>
+                    <ChartCard points={points}
+                               tracks={tracks}
+                               isLoading={isLoading}
+                               error={error}
+                               height={chartCardsHeight}
+                    />
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <ChartControlsCard
@@ -33,6 +39,7 @@ const ChartPage: React.FC = () => {
                         chartName={chartName}
                         chartPointsCount={numPoints}
                         setNumPoints={setNumPoints}
+                        height={chartCardsHeight}
                     />
                 </Grid>
             </Grid>

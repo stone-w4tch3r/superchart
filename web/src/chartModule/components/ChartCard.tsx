@@ -2,7 +2,6 @@ import React from "react";
 import {Box, CardContent, CardHeader, Skeleton, Typography} from "@mui/material";
 import {StyledCard} from "./StyledCard.tsx";
 import {IPoint, ITrack} from "../types.ts";
-import Card from "@mui/material/Card";
 import Chart from "./Chart.tsx";
 
 export interface IChartProps {
@@ -10,18 +9,25 @@ export interface IChartProps {
     tracks: ITrack[];
     isLoading: boolean;
     error: string | null;
+    height: number;
 }
 
-export const ChartCard: React.FC<IChartProps> = ({points, tracks, isLoading, error}) => {
-    return <StyledCard>
+export const ChartCard: React.FC<IChartProps> = ({
+                                                     points,
+                                                     tracks,
+                                                     isLoading,
+                                                     error,
+                                                     height
+                                                 }) => {
+    return <StyledCard height={height}>
         <CardHeader title="Route Chart"/>
         <CardContent sx={{width: "100%", height: "100%", p: 0}}>
-            {renderChartCardContent({points, tracks, isLoading, error})}
+            {renderChartCardContent(points, tracks, isLoading, error)}
         </CardContent>
     </StyledCard>;
 };
 
-function renderChartCardContent({points, tracks, isLoading, error}: IChartProps) {
+function renderChartCardContent(points: IPoint[], tracks: ITrack[], isLoading: boolean, error?: string) {
     if (isLoading) {
         return <Skeleton
             color={"#707070"}
@@ -40,7 +46,7 @@ function renderChartCardContent({points, tracks, isLoading, error}: IChartProps)
             justifyContent: "center",
             alignItems: "center"
         }}>
-            <Typography variant="h4"> No route loaded yet.</Typography>
+            <Typography variant="h5"> No route loaded yet.</Typography>
         </Box>
     }
     if (error) {

@@ -9,6 +9,7 @@ export interface IChartControlsProps {
     chartName: string;
     chartPointsCount: number | null;
     setNumPoints: (numPoints: number) => void;
+    height: number;
 }
 
 export const ChartControlsCard: React.FC<IChartControlsProps> = (
@@ -16,7 +17,8 @@ export const ChartControlsCard: React.FC<IChartControlsProps> = (
         fetchRoute,
         chartName,
         chartPointsCount,
-        setNumPoints
+        setNumPoints,
+        height
     }) => {
     const [inputError, setInputError] = useState<string | null>(null);
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
@@ -46,7 +48,7 @@ export const ChartControlsCard: React.FC<IChartControlsProps> = (
         }
     }
 
-    return <StyledCard>
+    return <StyledCard height={height}>
         {/* '& > *' is a CSS selector that selects all direct children of the parent element*/}
         <CardHeader title="Chart Controls"/>
         <CardContent sx={{'& > *': {mb: 2}, display: "flex", flexDirection: "column", height: '100%'}}>
