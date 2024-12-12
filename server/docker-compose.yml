@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   superchart-backend:
     image: ghcr.io/stone-w4tch3r/superchart-backend:release
@@ -7,8 +5,11 @@ services:
     pull_policy: always
     ports:
       - "5001:8080"
+    env_file:
+      - .env
     environment:
-      - SWAGGER_BASIC_AUTH_USERNAME
-      - SWAGGER_BASIC_AUTH_PASSWORD
-      - BASIC_AUTH_USERNAME
-      - BASIC_AUTH_PASSWORD
+      - SWAGGER_BASIC_AUTH_USERNAME=${SWAGGER_BASIC_AUTH_USERNAME}
+      - SWAGGER_BASIC_AUTH_PASSWORD=${SWAGGER_BASIC_AUTH_PASSWORD}
+      - BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME}
+      - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD}
+      - BASE_URL=${BASE_URL}

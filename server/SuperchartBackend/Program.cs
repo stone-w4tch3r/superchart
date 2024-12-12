@@ -30,6 +30,13 @@ builder.Services.AddOpenApiDocument(ConfigureOpenApiDocs);
 builder.Services.AddScoped<SwaggerBasicAuthMiddleware>();
 
 var app = builder.Build();
+
+var baseUrl = Environment.GetEnvironmentVariable(EnvVars.BaseUrl)?.TrimEnd('/') ?? "";
+if (!string.IsNullOrEmpty(baseUrl))
+{
+    app.UsePathBase(baseUrl);
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
